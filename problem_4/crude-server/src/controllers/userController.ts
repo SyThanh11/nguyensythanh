@@ -1,54 +1,129 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import UserService from "../services/userService.js";
+import UserCreateRequest from "../dto/request/UserCreateRequest.js";
+import { sendResponse } from "../utils/ResponseHandler.js";
+import UserResponse from "../dto/response/UserResponse.js";
+import UserUpdateRequest from "../dto/request/UserUpdateRequest.js";
+import { CustomError } from "../exception/CustomError.js";
+import { ErrorCode } from "../exception/ErrorCode.js";
+import { validate, ValidationError } from "class-validator";
+import CustomValidationError from "../exception/CustomValidationError.js";
 
 class UserController {
   private userService = new UserService();
 
-  createUser = async (req: Request, res: Response) => {
-    try {
-      console.log("Request received");
-      console.log(req.body);
-      const user = await this.userService.createUser(req.body);
-      res.status(201).json(user);
+  checkUserExist = async (_req: Request, _res: Response, next: NextFunction, id: string): Promise<void | Response> => {
+    try {  
+      const userId = Number(id);
+      if (isNaN(userId)) {
+        return next(new CustomError(ErrorCode.INVALID_USER_ID));
+      }
+
+      const userExists = await this.userService.checkUserExist(userId);
+      if (!userExists) {        
+        return next(new CustomError(ErrorCode.USER_NOT_FOUND));
+      }
+
+      next();
     } catch (error) {
-      res.status(500).json({ message: "Error creating user", error });
+      next(error);
     }
   };
 
-  getUserDetail = async (req: Request, res: Response) => {
+  createUser = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+    try {
+      const userDto = new UserCreateRequest(req.body);
+  
+      // Validate user data
+      const validateErrors = await validate(userDto);
+      if (validateErrors.length > 0) {
+        const errorMessages = validateErrors
+          .map((error: ValidationError) => {
+            if (error.constraints) {
+              return `${error.property} - ${Object.values(error.constraints).join(', ')}`;
+            }
+            return ''; 
+          })
+          .filter(message => message !== ''); 
+  
+        return next(new CustomValidationError(errorMessages.join('; '), 400));
+      }
+
+      const emailExists = await this.userService.checkEmailExist(userDto.email);
+      if(emailExists){
+        return next(new CustomError(ErrorCode.EMAIL_ALREADY_EXISTS));
+      }
+  
+      const user = await this.userService.createUser(userDto);
+      return sendResponse(res, 'User created successfully', new UserResponse(user));
+    } catch (error) {
+      next(error);
+    }
+  };
+  
+
+  getUserDetail = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const user = await this.userService.getUserById(Number(req.params.id));
-      if (!user) return res.status(404).json({ message: "User not found" });
-      res.json(user);
+      return sendResponse(res, "User found", new UserResponse(user!), 200);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching user", error });
+      next(error);
     }
   };
 
-  getAllUsers = async (_req: Request, res: Response) => {
+  getAllUsers = async (_req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const users = await this.userService.getAllUsers();
-      res.json(users);
+      return sendResponse(
+        res, 
+        "Users fetched successfully", 
+        users.map(user => new UserResponse(user)), 
+        200
+      );
     } catch (error) {
-      res.status(500).json({ message: "Error fetching users", error });
+      next(error);
     }
   };
 
-  updateUserDetail = async (req: Request, res: Response) => {
-    try {
-      const user = await this.userService.updateUser(Number(req.params.id), req.body);
-      res.json(user);
+  updateUserDetail = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+    try { 
+      const userDto = new UserUpdateRequest(req.body);
+
+      const validateErrors = await validate(userDto);
+      if (validateErrors.length > 0) {
+        const errorMessages = validateErrors
+          .map((error: ValidationError) => {
+            if (error.constraints) {
+              return `${error.property} - ${Object.values(error.constraints).join(', ')}`;
+            }
+            return ''; 
+          })
+          .filter(message => message !== ''); 
+  
+        return next(new CustomValidationError(errorMessages.join('; '), 400));
+      }
+
+      const existingUser = await this.userService.getUserById(Number(req.params.id));
+      if (userDto.email && userDto.email !== existingUser?.email) {
+        const emailExists = await this.userService.checkEmailExist(userDto.email);
+        if (emailExists) {
+          return next(new CustomError(ErrorCode.EMAIL_ALREADY_EXISTS));
+        }
+      }
+      
+      const user = await this.userService.updateUser(Number(req.params.id), userDto);
+      return sendResponse(res, "User updated successfully", new UserResponse(user), 200);
     } catch (error) {
-      res.status(500).json({ message: "Error updating user", error });
+      next(error);
     }
   };
 
-  deleteUser = async (req: Request, res: Response) => {
+  deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       await this.userService.deleteUser(Number(req.params.id));
-      res.json({ message: "User deleted successfully" });
+      return sendResponse(res, "Delete user successfully", null, 200);
     } catch (error) {
-      res.status(500).json({ message: "Error deleting user", error });
+      next(error);
     }
   };
 }

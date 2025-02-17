@@ -21,5 +21,9 @@ class UserModel {
     async delete(id) {
         return await prisma.user.delete({ where: { id } });
     }
+    async exists(id) {
+        const user = await prisma.user.findUnique({ where: { id } });
+        return user !== null;
+    }
 }
 export default UserModel;

@@ -28,6 +28,16 @@ class UserModel {
     async delete(id: number): Promise<IUser> {
         return await prisma.user.delete({ where: { id } });
     }
+
+    async existsById(id: number): Promise<boolean> {
+        const user = await prisma.user.findUnique({ where: { id } });
+        return user !== null;
+    }
+
+    async existsByEmail(email: string): Promise<boolean> {
+        const user = await prisma.user.findUnique({ where: { email } });
+        return user!== null;
+    }
 }
 
 export default UserModel;

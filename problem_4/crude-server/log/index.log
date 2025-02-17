@@ -1,0 +1,27 @@
+2025-02-17T04:37:58.968Z error: Server Error: app.use is not a function
+2025-02-17T04:39:08.428Z error: Custom Error: Invalid user ID, StatusCode: 400
+2025-02-17T04:43:29.593Z error: Server Error: Invalid value "undefined" for header "Access-Control-Allow-Origin"
+2025-02-17T05:01:52.188Z error: Custom Error: User not found, StatusCode: 404
+2025-02-17T05:05:22.327Z error: Custom Error: Can't find /users/ on the server!, StatusCode: 404
+2025-02-17T05:24:34.264Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-17T05:25:16.618Z error: Server Error: 
+Invalid `prisma.user.create()` invocation in
+D:\99Tech\problem_4\crude-server\src\models\user.model.ts:8:34
+
+  5 
+  6 class UserModel {
+  7     async create(user: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<IUser> {
+→ 8         return await prisma.user.create(
+Unique constraint failed on the constraint: `User_email_key`
+2025-02-17T05:31:35.196Z error: Custom Error: Email format is invalid, StatusCode: 400
+2025-02-17T05:34:36.763Z error: Custom Error: Invalid data provided, StatusCode: 422
+2025-02-17T05:38:25.015Z error: Custom Error: Invalid data provided, StatusCode: 422
+2025-02-17T05:44:38.995Z error: Validation Error: name - Username must be at least 6 characters long; password - Password must contain at least one uppercase letter,StatusCode: 422
+2025-02-17T05:46:49.361Z error: Validation Error: name - Username must be at least 6 characters long; password - Password must contain at least one uppercase letter,StatusCode: 400
+2025-02-17T05:47:39.456Z error: Validation Error: password - Password must contain at least one number,StatusCode: 400
+2025-02-17T05:50:08.676Z error: Validation Error: password - Password must contain at least one special character,StatusCode: 400
+2025-02-17T05:55:07.472Z error: Custom Error: User not found, StatusCode: 404
+2025-02-17T05:55:11.851Z error: Custom Error: User not found, StatusCode: 404
+2025-02-17T05:57:58.718Z error: Validation Error: password - Password must contain at least one special character,StatusCode: 400
+2025-02-17T05:58:03.447Z error: Custom Error: Email already exists, StatusCode: 400
+2025-02-17T05:58:09.103Z error: Custom Error: Email already exists, StatusCode: 400

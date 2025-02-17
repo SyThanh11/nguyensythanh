@@ -1,52 +1,73 @@
 import UserService from "../services/userService.js";
+import UserCreateRequest from "../dto/request/UserCreateRequest.js";
+import { sendResponse } from "../utils/ResponseHandler.js";
+import UserResponse from "../dto/response/UserResponse.js";
+import UserUpdateRequest from "../dto/request/UserUpdateRequest.js";
+import { CustomError } from "../exception/CustomError.js";
 class UserController {
     userService = new UserService();
-    async createUser(req, res) {
+    checkUserExist = async (_req, res, next, id) => {
         try {
-            const user = await this.userService.createUser(req.body);
-            res.status(201).json(user);
+            const userId = Number(id);
+            if (isNaN(userId)) {
+                return next(new CustomError('Invalid user ID', 400));
+            }
+            const userExists = await this.userService.checkUserExist(userId);
+            if (!userExists) {
+                return next(new CustomError('User not found', 404));
+            }
+            next();
         }
         catch (error) {
-            res.status(500).json({ message: "Error creating user", error });
+            next(error);
         }
-    }
-    async getUserDetail(req, res) {
+    };
+    createUser = async (req, res, next) => {
+        try {
+            const userDto = new UserCreateRequest(req.body);
+            const user = await this.userService.createUser(userDto);
+            return sendResponse(res, 'User created successfully', new UserResponse(user));
+        }
+        catch (error) {
+            next(error);
+        }
+    };
+    getUserDetail = async (req, res, next) => {
         try {
             const user = await this.userService.getUserById(Number(req.params.id));
-            if (!user)
-                return res.status(404).json({ message: "User not found" });
-            res.json(user);
+            return sendResponse(res, "User found", new UserResponse(user), 200);
         }
         catch (error) {
-            res.status(500).json({ message: "Error fetching user", error });
+            next(error);
         }
-    }
-    async getAllUsers(_req, res) {
+    };
+    getAllUsers = async (_req, res, next) => {
         try {
             const users = await this.userService.getAllUsers();
-            res.json(users);
+            return sendResponse(res, "Users fetched successfully", users.map(user => new UserResponse(user)), 200);
         }
         catch (error) {
-            res.status(500).json({ message: "Error fetching users", error });
+            next(error);
         }
-    }
-    async updateUserDetail(req, res) {
+    };
+    updateUserDetail = async (req, res, next) => {
         try {
-            const user = await this.userService.updateUser(Number(req.params.id), req.body);
-            res.json(user);
+            const userDto = new UserUpdateRequest(req.body);
+            const user = await this.userService.updateUser(Number(req.params.id), userDto);
+            return sendResponse(res, "User updated successfully", new UserResponse(user), 200);
         }
         catch (error) {
-            res.status(500).json({ message: "Error updating user", error });
+            next(error);
         }
-    }
-    async deleteUser(req, res) {
+    };
+    deleteUser = async (req, res, next) => {
         try {
             await this.userService.deleteUser(Number(req.params.id));
-            res.json({ message: "User deleted successfully" });
+            return sendResponse(res, "Delete user successfully", null, 200);
         }
         catch (error) {
-            res.status(500).json({ message: "Error deleting user", error });
+            next(error);
         }
-    }
+    };
 }
 export default UserController;
