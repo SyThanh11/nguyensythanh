@@ -8,11 +8,14 @@ import ApiResponse from "../dto/response/ApiResponse.js";
  */
 export const sendResponse = (res, message, data, statusCode = 200) => {
     let status;
-    if (statusCode >= 400 && statusCode < 500) {
+    if (statusCode >= 400 && statusCode <= 500) {
         status = 'fail';
     }
     else {
         status = 'success';
+    }
+    if (data === null) {
+        data = {};
     }
     return res.status(statusCode).json(new ApiResponse(status, message, data));
 };

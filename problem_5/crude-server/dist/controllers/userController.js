@@ -4,17 +4,20 @@ import { sendResponse } from "../utils/ResponseHandler.js";
 import UserResponse from "../dto/response/UserResponse.js";
 import UserUpdateRequest from "../dto/request/UserUpdateRequest.js";
 import { CustomError } from "../exception/CustomError.js";
+import { ErrorCode } from "../exception/ErrorCode.js";
+import { validate } from "class-validator";
+import CustomValidationError from "../exception/CustomValidationError.js";
 class UserController {
     userService = new UserService();
-    checkUserExist = async (_req, res, next, id) => {
+    checkUserExist = async (_req, _res, next, id) => {
         try {
             const userId = Number(id);
             if (isNaN(userId)) {
-                return next(new CustomError('Invalid user ID', 400));
+                return next(new CustomError(ErrorCode.INVALID_USER_ID));
             }
             const userExists = await this.userService.checkUserExist(userId);
             if (!userExists) {
-                return next(new CustomError('User not found', 404));
+                return next(new CustomError(ErrorCode.USER_NOT_FOUND));
             }
             next();
         }
@@ -25,6 +28,23 @@ class UserController {
     createUser = async (req, res, next) => {
         try {
             const userDto = new UserCreateRequest(req.body);
+            // Validate user data
+            const validateErrors = await validate(userDto);
+            if (validateErrors.length > 0) {
+                const errorMessages = validateErrors
+                    .map((error) => {
+                    if (error.constraints) {
+                        return `${error.property} - ${Object.values(error.constraints).join(', ')}`;
+                    }
+                    return '';
+                })
+                    .filter(message => message !== '');
+                return next(new CustomValidationError(errorMessages.join('; '), 400));
+            }
+            const emailExists = await this.userService.checkEmailExist(userDto.email);
+            if (emailExists) {
+                return next(new CustomError(ErrorCode.EMAIL_ALREADY_EXISTS));
+            }
             const user = await this.userService.createUser(userDto);
             return sendResponse(res, 'User created successfully', new UserResponse(user));
         }
@@ -53,6 +73,25 @@ class UserController {
     updateUserDetail = async (req, res, next) => {
         try {
             const userDto = new UserUpdateRequest(req.body);
+            const validateErrors = await validate(userDto);
+            if (validateErrors.length > 0) {
+                const errorMessages = validateErrors
+                    .map((error) => {
+                    if (error.constraints) {
+                        return `${error.property} - ${Object.values(error.constraints).join(', ')}`;
+                    }
+                    return '';
+                })
+                    .filter(message => message !== '');
+                return next(new CustomValidationError(errorMessages.join('; '), 400));
+            }
+            const existingUser = await this.userService.getUserById(Number(req.params.id));
+            if (userDto.email && userDto.email !== existingUser?.email) {
+                const emailExists = await this.userService.checkEmailExist(userDto.email);
+                if (emailExists) {
+                    return next(new CustomError(ErrorCode.EMAIL_ALREADY_EXISTS));
+                }
+            }
             const user = await this.userService.updateUser(Number(req.params.id), userDto);
             return sendResponse(res, "User updated successfully", new UserResponse(user), 200);
         }

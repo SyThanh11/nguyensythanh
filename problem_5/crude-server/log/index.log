@@ -25,3 +25,4 @@ Unique constraint failed on the constraint: `User_email_key`
 2025-02-17T05:57:58.718Z error: Validation Error: password - Password must contain at least one special character,StatusCode: 400
 2025-02-17T05:58:03.447Z error: Custom Error: Email already exists, StatusCode: 400
 2025-02-17T05:58:09.103Z error: Custom Error: Email already exists, StatusCode: 400
+2025-02-17T11:15:05.019Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404

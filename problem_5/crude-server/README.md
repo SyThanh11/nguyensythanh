@@ -26,9 +26,15 @@ yarn install
 ### 3. Configure environment variables
 Create a .env file in the root directory and add the following configuration:
 ```env
-DATABASE_URL="mysql://root:password@localhost:3306/db_name"
-PORT=3000
+DB_USER=db_user
+DB_PASSWORD=db_password
+DB_HOST=db_host
+DB_PORT=db_port
+DB_NAME=db_name
+DATABASE_URL="mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+PORT=8080
 NODE_ENV=development
+API_BACKEND="/api/v1"
 ```
 Note: If using PostgreSQL, modify DATABASE_URL as follows:
 ```env

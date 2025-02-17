@@ -17,8 +17,10 @@ class UserService {
         return await this.userModel.delete(id);
     };
     checkUserExist = async (id) => {
-        const user = await this.userModel.findById(id);
-        return user !== null;
+        return await this.userModel.existsById(id);
+    };
+    checkEmailExist = async (email) => {
+        return await this.userModel.existsByEmail(email);
     };
 }
 export default UserService;

@@ -17,7 +17,7 @@ configCors(app);
 app.use(express.json());
 app.use(morgan('dev'));
 
-app.use(rootRoute);
+app.use(process.env.API_BACKEND!, rootRoute);
 app.use((_req: Request, _res: Response, next: NextFunction) => {
     next(new CustomError(ErrorCode.URL_NOT_FOUND));
 });
@@ -26,4 +26,6 @@ app.use((err: Error | CustomError, req: Request, res: Response, next: NextFuncti
 });
 
 
-app.listen(PORT, () => console.log(`Running on ${PORT} ⚡`));
+app.listen(PORT, () => {
+    console.log(`✅ Server running at http://localhost:${PORT}${process.env.API_BACKEND}`);
+});

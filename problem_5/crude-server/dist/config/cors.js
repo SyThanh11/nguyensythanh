@@ -3,7 +3,7 @@ dotenv.config();
 const configCors = (app) => {
     app.use((req, res, next) => {
         const httpOrigin = req.headers.origin;
-        if (httpOrigin === process.env.URL_CLIENT) {
+        if (httpOrigin && httpOrigin === process.env.URL_CLIENT) {
             res.setHeader("Access-Control-Allow-Origin", httpOrigin);
         }
         res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");

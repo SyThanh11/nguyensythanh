@@ -1,6 +1,6 @@
 import express from 'express'
 import asyncHandler from '../middleware/asyncHandler.js';
-import UserController from '../controllers/userController.js';
+import UserController from '../controllers/UserController.js';
 
 const userRoute = express.Router();
 const userController = new UserController();
