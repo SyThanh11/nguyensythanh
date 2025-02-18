@@ -1,7 +1,9 @@
 import UserModel from "../models/user.model.js";
+import { hashPassword } from "../utils/hashUtils.js";
 class UserService {
     userModel = new UserModel();
     createUser = async (user) => {
+        user.password = await hashPassword(user.password);
         return await this.userModel.create(user);
     };
     getUserById = async (id) => {

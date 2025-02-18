@@ -26,3 +26,19 @@ Unique constraint failed on the constraint: `User_email_key`
 2025-02-17T05:58:03.447Z error: Custom Error: Email already exists, StatusCode: 400
 2025-02-17T05:58:09.103Z error: Custom Error: Email already exists, StatusCode: 400
 2025-02-17T11:15:05.019Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T02:55:18.262Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T02:55:18.691Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T02:58:02.180Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T03:06:48.004Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T03:07:59.522Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T03:08:01.131Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T03:14:27.421Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T03:15:42.649Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T03:15:52.409Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T03:17:21.390Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T03:17:23.669Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T03:17:27.869Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T03:17:28.880Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T03:17:44.913Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T03:17:45.916Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404
+2025-02-18T03:18:26.594Z error: Custom Error: The requested URL was not found on the server, StatusCode: 404

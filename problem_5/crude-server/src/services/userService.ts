@@ -2,11 +2,13 @@ import UserCreateRequest from "../dto/request/UserCreateRequest.js";
 import UserUpdateRequest from "../dto/request/UserUpdateRequest.js";
 import { IUser } from "../interface/user.interface.js";
 import UserModel from "../models/user.model.js";
+import { hashPassword } from "../utils/hashUtils.js";
 
 class UserService {
     private userModel = new UserModel();
 
     createUser = async (user: UserCreateRequest): Promise<IUser> => {
+        user.password = hashPassword(user.password);
         return await this.userModel.create(user);
     }
 
